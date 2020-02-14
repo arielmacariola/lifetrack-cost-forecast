@@ -38,16 +38,23 @@ window.addEventListener("load", () => {
     e.preventDefault();
 
     getForecastData().then(data => {
-      const dataRows = data
-        .map((row, index) => {
-          return `<tr>
+      let dataRows;
+
+      if (Array.isArray(data) && data["error"] === undefined) {
+        console.log(data);
+        dataRows = data
+          .map((row, index) => {
+            return `<tr>
                 <th scope="row">${index + 1}</th>
                 <td>${row.monthYearLabel}</td>
                 <td>${row.numOfStudiesThisMonth}</td>
                 <td>${row.totalCostForcasted}</td>
             </tr>`;
-        })
-        .join("");
+          })
+          .join("");
+      } else {
+        dataRows = `<tr><td colspan='4' align='center'>No available data. ${data["error"]}</td></tr>`;
+      }
 
       // Insert result data in result container
       const resultBox = (document.querySelector(

@@ -17,13 +17,22 @@ class CostForecast {
     private $ramPerStudyCostIn1Day;
     private $forecastData = [];
 
-    function __construct() {
+    function __construct( $props = [] ) {
 
+        // Initialise default computation parameter values
         $this->studiesToRamRatio      = 1000;
         $this->ramToStudiesRatioMB    = 500;
         $this->ram1GbPerHourCost      = 0.00553;
         $this->storageUsePerStudyInMb = 10;
         $this->storage1GbPerMonthCost = 0.10;
+
+        // Set property value if given
+        foreach( $props as $name => $value ) :
+            if( property_exists ( $this, $name) ) :
+                $this->$name = $value;
+            endif;
+        endforeach;
+
         $this->ramPerStudyCostIn1Day  = $this->computeRamPerStudyCostIn1Day();
         
     }
@@ -32,7 +41,7 @@ class CostForecast {
      * Compute costing of RAM usage for each Study in 1 day
      * 
      */
-    function computeRamPerStudyCostIn1Day() {
+    private function computeRamPerStudyCostIn1Day() {
         $ramNeededPerStudyInMB = $this->ramToStudiesRatioMB / $this->studiesToRamRatio;
         $ram1MbPerHourCost     = $this->ram1GbPerHourCost / 1000;
         $ramPerStudyCost       = $ramNeededPerStudyInMB * $ram1MbPerHourCost * 24;
@@ -48,7 +57,7 @@ class CostForecast {
      * @param int $numOfMonthForecast This is the given POST data for the number of months to forecast from the current month
      * 
      */
-    public function getCostForecastDataInJSON( $numOfStudiesPerDay = 100000, $growthPercentagePerMonth = 3, $numOfMonthForecast = 12 ) {
+    public function getCostForecastDataInJSON( $numOfStudiesPerDay, $growthPercentagePerMonth, $numOfMonthForecast ) {
         
         $forecastCtr = 1;
         $numberOfStudies = $numOfStudiesPerDay;

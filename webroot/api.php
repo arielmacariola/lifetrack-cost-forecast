@@ -10,23 +10,24 @@ if ($contentType === "application/json") :
   $postData = json_decode($content, true);
 
     //If json_decode failed, the JSON is invalid.
-    if( is_array($postData) ) :
-        $numOfStudiesPerDay       = ( isset( $postData['numberOfStudiesPerDay'] ) ) ? $postData['numberOfStudiesPerDay'] : 0;
-        $growthPercentagePerMonth = ( isset( $postData['growthPercentagePerMonth'] ) ) ? $postData['growthPercentagePerMonth'] : 0;
-        $numOfMonthForecast       = ( isset( $postData['numOfMonthForecast'] ) ) ? $postData['numOfMonthForecast'] : 0;
+    if( is_array($postData) &&
+        isset( $postData['numberOfStudiesPerDay'] ) &&
+        isset( $postData['growthPercentagePerMonth'] ) &&
+        isset( $postData['numOfMonthForecast'] ) ) :
 
         // Set forecast options here
-        $CostForecast = new CostForecast();
-        $CostForecast->studiesToRamRatio      = 1000;
-        $CostForecast->ramToStudiesRatioMB    = 500;
-        $CostForecast->ram1GbPerHourCost      = 0.00553;
-        $CostForecast->storageUsePerStudyInMb = 10;
-        $CostForecast->storage1GbPerMonthCost = 0.10;
-
-        $response = $CostForecast->getCostForecastDataInJSON($numOfStudiesPerDay, $growthPercentagePerMonth, $numOfMonthForecast);
+        $options = [
+            "studiesToRamRatio"      => 1000,
+            "ramToStudiesRatioMB"    => 500,
+            "ram1GbPerHourCost"      => 0.00553,
+            "storageUsePerStudyInMb" => 10,
+            "storage1GbPerMonthCost" => 0.10,
+        ];
+        $CostForecast = new CostForecast( $options );
+        $response     = $CostForecast->getCostForecastDataInJSON( $postData['numberOfStudiesPerDay'], $postData['growthPercentagePerMonth'], $postData['numOfMonthForecast'] );
 
         echo json_encode( $response );
     else :
-        echo json_decode( ['error' => 'POST data is required.'] );
+        echo json_encode( ['error' => 'All input fields are required.' ] );
     endif;
 endif;
