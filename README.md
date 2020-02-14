@@ -15,7 +15,7 @@ If you don't have Docker installed but you have apache and php setup in your mah
 2. Get inside the directory `lifetrack-cost-forecast` <br>
    $ `cd lifetrack-cost-forecast`
 3. Run docker-compose <br>
-   $ `docker-compose up`
+   $ `docker-compose up -d`
 4. In your browser go to <br>
    http://0.0.0.0:8000/
 
